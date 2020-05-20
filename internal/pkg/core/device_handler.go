@@ -689,6 +689,7 @@ func (dh *DeviceHandler) doStateConnected(ctx context.Context) error {
 		}
 	}()
 	go dh.updateLocalDevice()
+	dh.UpdatePmConfig(device.PmConfigs)
 	return nil
 }
 
@@ -1346,6 +1347,28 @@ func (dh *DeviceHandler) AddUniPortToOnu(intfID, onuID, uniPort uint32) {
 			logger.Debugw("adding-uni-port", log.Fields{"port": uniPort, "intfID": intfID, "onuId": onuID})
 		}
 	}
+}
+
+func (dh *DeviceHandler) UpdatePmConfig(pmConfigs *voltha.PmConfigs) error {
+
+	logger.Debugw("update-pm-configs", log.Fields{"Device-Id": dh.device.Id, "pmConfigs": pmConfigs})
+
+        if pmConfigs.DefaultFreq != dh.metrics.ToPmConfigs().DefaultFreq {
+                dh.metrics.UpdateFrequency(pmConfigs.DefaultFreq)
+        }
+
+        if pmConfigs.Grouped == false {
+                metrics := dh.metrics.GetSubscriberMetrics()
+                for _, m := range pmConfigs.Metrics {
+                        metrics[m.Name].Enabled = m.Enabled
+
+                }
+        }
+
+	dh.stopCollector <- true
+        go startCollector(dh)
+
+        return nil
 }
 
 //UpdateFlowsIncrementally updates the device flow

@@ -29,7 +29,7 @@ DOCKER_EXTRA_ARGS        ?=
 DOCKER_REGISTRY          ?=
 DOCKER_REPOSITORY        ?=
 DOCKER_TAG               ?= ${VERSION}
-ADAPTER_IMAGENAME        := ${DOCKER_REGISTRY}${DOCKER_REPOSITORY}voltha-openolt-adapter:${DOCKER_TAG}
+ADAPTER_IMAGENAME        := rohan040496/voltha-openolt-adapter:1
 TYPE                     ?= minimal
 
 ## Docker labels. Only set ref and commit date if committed
